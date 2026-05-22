@@ -1,0 +1,3 @@
+Amrit Chandan,90,85,88,92,95
+Rahul Sharma,70,75,80,68,72
+Priya Das,88,91,84,86,90
