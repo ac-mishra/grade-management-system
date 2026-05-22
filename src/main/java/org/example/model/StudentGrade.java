@@ -1,11 +1,12 @@
-package org.example;
+package org.example.model;
 
 public class StudentGrade {
 
     private String studentName;
     private double[] marks;
 
-    public StudentGrade(String studentName, double[] marks) {
+    public StudentGrade(String studentName,
+                        double[] marks) {
 
         this.studentName = studentName;
         this.marks = marks;

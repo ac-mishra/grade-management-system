@@ -1,5 +1,10 @@
 package org.example;
 
+import org.example.model.StudentGrade;
+import org.example.service.GradeCalculator;
+import org.example.service.ReportGenerator;
+import org.example.util.ValidationUtils;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -7,7 +12,8 @@ public class GradeManagementSystem {
 
     static Scanner sc = new Scanner(System.in);
 
-    static ArrayList<StudentGrade> students = new ArrayList<>();
+    static ArrayList<StudentGrade> students =
+            new ArrayList<>();
 
     static final String[] SUBJECTS = {
             "Mathematics",
@@ -61,19 +67,25 @@ public class GradeManagementSystem {
                     break;
 
                 case 4:
-                    findTopPerformer();
+                    ReportGenerator.findTopPerformer(
+                            students);
                     break;
 
                 case 5:
-                    generateReport();
+                    ReportGenerator.generateReport(
+                            students);
                     break;
 
+
+
                 case 6:
-                    System.out.println("Thank you for using the system!");
+                    System.out.println(
+                            "Thank you for using the system!");
                     break;
 
                 default:
-                    System.out.println("❌ Invalid choice!");
+                    System.out.println(
+                            "❌ Invalid choice!");
             }
 
         } while (choice != 6);
@@ -96,23 +108,27 @@ public class GradeManagementSystem {
 
                 try {
 
-                    System.out.print("Enter marks for "
-                            + SUBJECTS[i] + ": ");
+                    System.out.print(
+                            "Enter marks for "
+                                    + SUBJECTS[i] + ": ");
 
                     marks[i] = sc.nextDouble();
 
-                    if (marks[i] >= 0 && marks[i] <= 100) {
+                    if (ValidationUtils.isValidMark(
+                            marks[i])) {
 
                         break;
 
                     } else {
 
-                        System.out.println("❌ Marks must be between 0 and 100");
+                        System.out.println(
+                                "❌ Marks must be between 0 and 100");
                     }
 
                 } catch (Exception e) {
 
-                    System.out.println("❌ Invalid input!");
+                    System.out.println(
+                            "❌ Invalid input!");
 
                     sc.nextLine();
                 }
@@ -126,45 +142,63 @@ public class GradeManagementSystem {
 
         students.add(student);
 
-        System.out.println("✅ Student added successfully!");
+        System.out.println(
+                "✅ Student added successfully!");
     }
 
     // View Students
     public static void viewStudents() {
 
+        System.out.println("\n=== ALL STUDENTS ===");
+
         if (students.isEmpty()) {
 
-            System.out.println("No students found.");
+            System.out.println("No students found!");
             return;
         }
 
-        System.out.println("\n================ STUDENT RECORDS ================");
+        System.out.printf(
+                "%-20s %-12s %-12s %-12s %-12s %-12s %-12s\n",
+                "Student Name",
+                "Math",
+                "Science",
+                "English",
+                "History",
+                "Computer",
+                "Average");
+
+        System.out.println(
+                "-".repeat(100));
 
         for (StudentGrade s : students) {
 
-            System.out.println("\nStudent Name: "
-                    + s.getStudentName());
-
             double[] marks = s.getMarks();
 
-            for (int i = 0; i < SUBJECTS.length; i++) {
+            double average =
+                    GradeCalculator.calculateAverage(marks);
 
-                System.out.println(SUBJECTS[i]
-                        + ": " + marks[i]);
-            }
+            System.out.printf(
+                    "%-20s %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f %-12.2f\n",
+                    s.getStudentName(),
+                    marks[0],
+                    marks[1],
+                    marks[2],
+                    marks[3],
+                    marks[4],
+                    average);
         }
     }
 
     // Calculate Grades
     public static void calculateGrades() {
 
+        System.out.println("\n=== STUDENT AVERAGES ===");
+
         if (students.isEmpty()) {
 
-            System.out.println("No students found.");
+            System.out.println("No students found!");
             return;
         }
-
-        System.out.println("\n================ GRADE REPORT ================");
 
         for (StudentGrade s : students) {
 
@@ -173,80 +207,14 @@ public class GradeManagementSystem {
                             s.getMarks());
 
             String grade =
-                    GradeCalculator.getGrade(average);
+                    GradeCalculator.getGrade(
+                            average);
 
             System.out.printf(
-                    "%-20s Average: %-10.2f Grade: %s\n",
+                    "%-20s : Average = %.2f, Grade = %s\n",
                     s.getStudentName(),
                     average,
-                    grade
-            );
+                    grade);
         }
-    }
-
-    // Find Top Performer
-    public static void findTopPerformer() {
-
-        if (students.isEmpty()) {
-
-            System.out.println("No students found.");
-            return;
-        }
-
-        StudentGrade topStudent = students.get(0);
-
-        double highestAverage =
-                GradeCalculator.calculateAverage(
-                        topStudent.getMarks());
-
-        for (StudentGrade s : students) {
-
-            double average =
-                    GradeCalculator.calculateAverage(
-                            s.getMarks());
-
-            if (average > highestAverage) {
-
-                highestAverage = average;
-                topStudent = s;
-            }
-        }
-
-        System.out.println("\n🏆 TOP PERFORMER");
-
-        System.out.println("Name: "
-                + topStudent.getStudentName());
-
-        System.out.printf("Average: %.2f\n",
-                highestAverage);
-    }
-
-    // Generate Report
-    public static void generateReport() {
-
-        if (students.isEmpty()) {
-
-            System.out.println("No students found.");
-            return;
-        }
-
-        System.out.println("\n============= PERFORMANCE REPORT =============");
-
-        System.out.println("Total Students: "
-                + students.size());
-
-        double totalAverage = 0;
-
-        for (StudentGrade s : students) {
-
-            totalAverage +=
-                    GradeCalculator.calculateAverage(
-                            s.getMarks());
-        }
-
-        System.out.printf("Class Average: %.2f\n",
-                totalAverage / students.size());
-
-        findTopPerformer();
     }
 }
